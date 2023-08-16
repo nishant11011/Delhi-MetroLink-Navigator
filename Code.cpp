@@ -6,12 +6,10 @@
 
 using namespace std;
  
-
 void make_adjacency_list(vector<vector<float>>adjacency_list[]){
     // An element in the adjacency array is a vector in the format:  
     // { adjacent station from a station, name it - S , time taken from S to adjacent station , Line number }
                             
-
     // RED LINE  
     // Line No - 0
 
@@ -256,7 +254,6 @@ void make_adjacency_list(vector<vector<float>>adjacency_list[]){
         adjacency_list[112].push_back({111,2,2});
         adjacency_list[112].push_back({113,1.9,2});
         adjacency_list[113].push_back({112,1.9,2});
-
 
 
         //GREEN LINE
