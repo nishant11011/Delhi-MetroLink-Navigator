@@ -666,7 +666,6 @@ static bool comparator(pair<int,vector<int>>&p1 , pair<int,vector<int>>&p2){
 
 int compute_fare(int num_stations){
   int fare;
-
   if(num_stations <=4){
     fare=10;
   }
@@ -807,9 +806,7 @@ void Shortest_Path(int source_index, int destination_index, vector<vector<float>
             pq.push({{new_time,adjnode},line_no});
              
             }
-           
         }
-
      }
      
      int node = destination_index;
@@ -820,7 +817,6 @@ void Shortest_Path(int source_index, int destination_index, vector<vector<float>
      }
      
      reverse(path.begin(),path.end());
-
 
     return;
 }
@@ -912,19 +908,19 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
   store_interchange_time(interchange_time);
 
   
-      unordered_map<int,string>line_color;
+  unordered_map<int,string>line_color;
 
-      line_color[0] = "Red Line";
-      line_color[1] = "Yellow Line";
-      line_color[2] = "Blue Line";
-      line_color[3] = "Green Line";
-      line_color[4] = "Violet Line";
-      line_color[5] = "Pink Line";
-      line_color[6] = "Magenta Line";
-      line_color[7] = "Grey Line";
-      line_color[8] = "Orange Line";
-      line_color[9] = "Rapid Metro Line";
-      line_color[10] ="Aqua Line";
+  line_color[0] = "Red Line";
+  line_color[1] = "Yellow Line";
+  line_color[2] = "Blue Line";
+  line_color[3] = "Green Line";
+  line_color[4] = "Violet Line";
+  line_color[5] = "Pink Line";
+  line_color[6] = "Magenta Line";
+  line_color[7] = "Grey Line";
+  line_color[8] = "Orange Line";
+  line_color[9] = "Rapid Metro Line";
+  line_color[10] ="Aqua Line";
  
  
   cout<<"Enter - 1 For Getting Shortest Path"<<endl;
@@ -1039,7 +1035,7 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
       
       int total_stoppage_time = 0.25*(num_stations-2);
 
-      cout<<"Total Time Taken : "<<total_stoppage_time + time<<endl<<endl;
+      cout<<"Total Time Taken : "<< time + total_stoppage_time<<endl<<endl;
    
   }
 
