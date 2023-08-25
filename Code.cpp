@@ -6,10 +6,12 @@
 
 using namespace std;
  
+
 void make_adjacency_list(vector<vector<float>>adjacency_list[]){
     // An element in the adjacency array is a vector in the format:  
     // { adjacent station from a station, name it - S , time taken from S to adjacent station , Line number }
                             
+
     // RED LINE  
     // Line No - 0
 
@@ -254,6 +256,7 @@ void make_adjacency_list(vector<vector<float>>adjacency_list[]){
         adjacency_list[112].push_back({111,2,2});
         adjacency_list[112].push_back({113,1.9,2});
         adjacency_list[113].push_back({112,1.9,2});
+
 
 
         //GREEN LINE
@@ -607,19 +610,19 @@ void make_adjacency_list(vector<vector<float>>adjacency_list[]){
 void store_interchange_time(unordered_map<int,float>&interchange_time){
 
         interchange_time[12] = 1.5;  //Welcome
-        interchange_time[15] = 7.5;  //Kashmere Gate
+        interchange_time[15] = 5.5;  //Kashmere Gate
         interchange_time[20] = 2;    //Inderlok
         interchange_time[23] = 1.5;  //Netaji Subash Place
-        interchange_time[34] = 5;  //Azadpur
+        interchange_time[34] = 5;    //Azadpur
         interchange_time[42] = 1.5;  //New Delhi
-        interchange_time[43] = 1.5;  //Rajiv Chowk
+        interchange_time[43] = 2.5;  //Rajiv Chowk
         interchange_time[45] = 1;    //Central Secretariat
         interchange_time[49] = 2;    //Dilli Haat - INA
         interchange_time[52] = 5;    //Hauz Khas
         interchange_time[61] = 1.5;  //Sikandarpur
         interchange_time[65] = 2;    //Dwarka Sector-21 
         interchange_time[73] = 1;    //Dwarka
-        interchange_time[78] = 1;  //Janak Puri West
+        interchange_time[78] = 1;    //Janak Puri West
         interchange_time[83] = 5;    //Rajouri Garden
         interchange_time[86] = 2.5;  //Kirti Nagar 
         interchange_time[94] = 1.5;  //Mandi House 
@@ -648,6 +651,18 @@ string CAPITALIZE(string s) {
   return s;
 }
 
+static bool comparator(pair<int,vector<int>>&p1 , pair<int,vector<int>>&p2){
+    if(p1.first < p2.first){
+      return true;
+    }
+    else if(p1.first > p2.first){
+      return false;
+    }
+    else{
+      if(p1.second.size() < p2.second.size()) return true;
+      else return false;
+    }
+}
 
 int compute_fare(int num_stations){
   int fare;
@@ -690,6 +705,64 @@ void compute_interchanges(vector<pair<int,int>>&interchange_at_station ,  vector
      }
 
      return;
+}
+
+void compute_time_taken(vector<int>&path, int index ,float&time , vector<vector<float>>adjacency_list[], unordered_map<int,float>&interchange_time , int num_stations , int prev_line_no){
+    
+    if(index==num_stations-1) return;
+
+    for(auto adjacent : adjacency_list[path[index]]){
+        int adjnode = adjacent[0];
+        float weight = adjacent[1];
+        int line_no = adjacent[2];
+
+        if(adjnode == path[index+1]){
+
+        if(prev_line_no!=-1 && prev_line_no!=line_no){
+        time = time +  weight + interchange_time[path[index]];
+        compute_time_taken(path, index+1 ,time,adjacency_list, interchange_time , num_stations , line_no);
+        }
+        else{
+        time = time +  weight;
+        compute_time_taken(path, index+1 ,time ,adjacency_list, interchange_time , num_stations , line_no);
+        }
+
+        }
+    }
+   
+    return;
+}
+
+
+void Path_with_minimum_interchanges(vector<pair<int,vector<int>>>&possible_paths, int node, int destination_index, vector<int>&ds , int interchanges , int prev  , vector<vector<float>> adjacency_list[] , unordered_map<int,float>&interchange_time , vector<int>&visited){
+    if(node==destination_index){
+      possible_paths.push_back({interchanges ,ds});
+      return;
+    }
+
+    for(auto adjacent : adjacency_list[node]){
+      int adjnode = adjacent[0];
+      int line_no = adjacent[2];
+     
+      if(!visited[adjnode]){
+      visited[adjnode]=1;
+      ds.push_back(adjnode);
+     
+      if(prev!=-1 && prev!=line_no){
+        Path_with_minimum_interchanges(possible_paths, adjnode, destination_index, ds ,interchanges+1 ,line_no, adjacency_list,interchange_time, visited);
+      }
+      else{
+         Path_with_minimum_interchanges(possible_paths, adjnode, destination_index, ds ,interchanges ,line_no, adjacency_list,interchange_time, visited);
+      }
+
+      ds.pop_back();
+      visited[adjnode]=0;
+      
+      }
+      
+    }
+
+    return;
 }
 
 
@@ -784,7 +857,8 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
   "Phase-3", "Noida Sector 51", "Noida Sector 76", "Noida Sector 101", "Noida Sector 81", "NSEZ", "Noida Sector 83", "Noida Sector 137", "Noida Sector 142",
   "Noida Sector 143", "Noida Sector 144", "Noida Sector 145", "Noida Sector 146", "Noida Sector 147", "Noida Sector 148", "Knowledge Park II", "Pari Chowk", 
   "Alpha 1", "Delta 1", "GNIDA Office", "Depot"};
-  
+  cout<<"Welcome To Delhi Metro!"<<endl;
+
   string source;
   cout<<"Enter the Starting Station : ";
   getline(cin , source ,'\n');
@@ -827,6 +901,7 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
   if(valid_destination==false){
     cout<<"The Destination Station Entered is InValid"<<endl;
   }
+ 
 
   vector<vector<float>> adjacency_list[260];
   
@@ -835,57 +910,69 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
   unordered_map<int,float>interchange_time;
 
   store_interchange_time(interchange_time);
- 
+
   
+      unordered_map<int,string>line_color;
+
+      line_color[0] = "Red Line";
+      line_color[1] = "Yellow Line";
+      line_color[2] = "Blue Line";
+      line_color[3] = "Green Line";
+      line_color[4] = "Violet Line";
+      line_color[5] = "Pink Line";
+      line_color[6] = "Magenta Line";
+      line_color[7] = "Grey Line";
+      line_color[8] = "Orange Line";
+      line_color[9] = "Rapid Metro Line";
+      line_color[10] ="Aqua Line";
+ 
+ 
+  cout<<"Enter - 1 For Getting Shortest Path"<<endl;
+  cout<<"Enter - 2 For Getting Path with Minimum Interchanges"<<endl;
+
+  int choice;
+  cin>>choice;
+  cout<<endl;
   
   vector<int> path;
+  int num_stations;
+
+  //Shortest Path
+  if(choice==1){
+  
   vector<float>time_array(260,1e9);
   
 
   Shortest_Path(source_index, destination_index,  adjacency_list, interchange_time, path, time_array);
      
 
-  int num_stations = path.size();
+  num_stations = path.size();
 
-  cout<<"The Shortest Path : "<<endl;
-  for(int i=0;i<path.size();i++){
+  cout<<"The Shortest Route : "<<endl;
+  for(int i=0;i<num_stations;i++){
     cout<<Stations_List[path[i]];
     if(i!=num_stations-1) cout<<" -> ";
   }
 
   cout<<endl<<endl;
-  
-  unordered_map<int,string>line_color;
 
-  line_color[0] = "Red Line";
-  line_color[1] = "Yellow Line";
-  line_color[2] = "Blue Line";
-  line_color[3] = "Green Line";
-  line_color[4] = "Violet Line";
-  line_color[5] = "Pink Line";
-  line_color[6] = "Magenta Line";
-  line_color[7] = "Grey Line";
-  line_color[8] = "Orange Line";
-  line_color[9] = "Rapid Metro Line";
-  line_color[10] ="Aqua Line";
  
- vector<pair<int,int>>interchange_at_station;
- 
- int index = 0;
- int prev = -1;
+      vector<pair<int,int>>interchange_at_station;
+      int index = 0;
+      int prev = -1;
 
- compute_interchanges(interchange_at_station , path ,adjacency_list, prev, index );
+      compute_interchanges(interchange_at_station , path ,adjacency_list, prev, index );
 
-  if(interchange_at_station.size()>0){
+      if(interchange_at_station.size()>0){
 
-  cout<<"Interchanges are :"<<endl;
-  int num_interchanges = interchange_at_station.size();
-  
-  for(int interchange=0;interchange<num_interchanges;interchange++){
-      cout<<interchange+1<<") At "<<Stations_List[interchange_at_station[interchange].first]<<" change for the "<<line_color[interchange_at_station[interchange].second]<<endl;
-  }
-  cout<<endl;
-  }
+      cout<<"Interchanges are :"<<endl;
+      int num_interchanges = interchange_at_station.size();
+        
+      for(int interchange=0;interchange<num_interchanges;interchange++){
+        cout<<interchange+1<<") At "<<Stations_List[interchange_at_station[interchange].first]<<" change for the "<<line_color[interchange_at_station[interchange].second]<<endl;
+      }
+      cout<<endl;
+      }  
 
   // Total stoppage time is computed by the product of (Stoppage time at a station -> Which is Generalized to 15 secs i.e. 0.25 mins)
   // and (num_stations-2), this is so because stoppage time at source and destination station won't be considered.
@@ -894,10 +981,71 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
   // So, Total time taken = Time taken between the stations + Interchange Time (if any) + Total Stoppage Time
   cout<<"Total Time Taken : "<< time_array[destination_index] + total_stoppage_time <<endl<<endl;
 
-  cout<<"Total Number of Stations : "<< num_stations <<endl<<endl;
-  
-  cout<<"Fare In Rupees : "<<compute_fare(num_stations);
+  }
+
+
+
+  //Minimum Interchanges
+  else if(choice==2){
+
+      vector<pair<int,vector<int>>> possible_paths;
+      vector<int>visited(260,0);
+      vector<int>ds;
+      int interchanges = 0;
+
+      visited[source_index]=1;
+      ds.push_back(source_index);
+      Path_with_minimum_interchanges(possible_paths, source_index, destination_index, ds, interchanges ,-1, adjacency_list ,interchange_time, visited);
+      
+      sort(possible_paths.begin(),possible_paths.end() , comparator);
+      
+      pair<int,vector<int>> result = possible_paths[0];
+
+      cout<<"Minimum Interchanges : "<<result.first<<endl<<endl;
+
+      path  = result.second;
+      num_stations = path.size();
+
+      cout<<"The Route with Minimum Interchanges : "<<endl;
+
+      for(int i=0;i<num_stations;i++){
+       cout<<Stations_List[path[i]];
+       if(i!=path.size()-1) cout<<" -> ";
+      }
+      cout<<endl<<endl;
+      
+      vector<pair<int,int>>interchange_at_station;
+      int index = 0;
+      int prev = -1;
+
+      compute_interchanges(interchange_at_station , path ,adjacency_list, prev, index );
+
+      if(interchange_at_station.size()>0){
+
+      cout<<"Interchanges are :"<<endl;
+      int num_interchanges = interchange_at_station.size();
+        
+      for(int interchange=0;interchange<num_interchanges;interchange++){
+        cout<<interchange+1<<") At "<<Stations_List[interchange_at_station[interchange].first];
+        cout<<" change for the "<<line_color[interchange_at_station[interchange].second]<<endl;
+      }
+      cout<<endl;
+      } 
+      
+      float time=0;
+      int prev_line_no = -1;
+      int Index=0;
+      compute_time_taken(path, Index ,time ,adjacency_list, interchange_time , num_stations , prev_line_no);
+      
+      int total_stoppage_time = 0.25*(num_stations-2);
+
+      cout<<"Total Time Taken : "<<total_stoppage_time + time<<endl<<endl;
+   
+  }
+
+cout<<"Total Number of Stations : "<< num_stations <<endl<<endl;
+
+cout<<"Fare In Rupees : "<<compute_fare(num_stations);
 
   return 0;
 }
-
