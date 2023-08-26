@@ -970,6 +970,14 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
 
       compute_interchanges(interchange_at_station , path ,adjacency_list, prev, index );
 
+       for(int i=0;i<interchange_at_station.size()-1;i++){
+        if((interchange_at_station[i].first==117 && interchange_at_station[i+1].first==118 ) || (interchange_at_station[i].first==118 && interchange_at_station[i+1].first==117)){
+          interchange_at_station.erase(interchange_at_station.begin()+i);
+          interchange_at_station.erase(interchange_at_station.begin()+i);
+         break;
+        }
+      }
+    
       if(interchange_at_station.size()>0){
 
       cout<<"Interchanges are :"<<endl;
@@ -1026,7 +1034,15 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
       int prev = -1;
 
       compute_interchanges(interchange_at_station , path ,adjacency_list, prev, index );
-
+      
+       for(int i=0;i<interchange_at_station.size()-1;i++){
+        if((interchange_at_station[i].first==117 && interchange_at_station[i+1].first==118 ) || (interchange_at_station[i].first==118 && interchange_at_station[i+1].first==117)){
+          interchange_at_station.erase(interchange_at_station.begin()+i);
+          interchange_at_station.erase(interchange_at_station.begin()+i);
+         break;
+        }
+      }
+    
       if(interchange_at_station.size()>0){
 
       cout<<"Interchanges are :"<<endl;
