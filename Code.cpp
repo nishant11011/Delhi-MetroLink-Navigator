@@ -50,6 +50,14 @@ void make_adjacency_list(vector<vector<float>>adjacency_list[]){
         adjacency_list[16].push_back({17,1.9,0});
         adjacency_list[17].push_back({16,1.9,0});
         adjacency_list[17].push_back({18,2,0});
+        adjacency_list[18].push_back({17,2,0});
+        adjacency_list[18].push_back({19,2,0});
+        adjacency_list[19].push_back({18,2,0});
+        adjacency_list[19].push_back({20,2,0});
+        adjacency_list[20].push_back({19,2,0});
+        adjacency_list[20].push_back({21,2,0});
+        adjacency_list[21].push_back({20,2,0});
+        adjacency_list[21].push_back({22,2,0});
         adjacency_list[22].push_back({21,2,0});
         adjacency_list[22].push_back({23,2.2,0});
         adjacency_list[23].push_back({22,2.2,0});
@@ -439,7 +447,7 @@ void make_adjacency_list(vector<vector<float>>adjacency_list[]){
         adjacency_list[118].push_back({117,2,5});
         adjacency_list[194].push_back({117,2,5});
         adjacency_list[117].push_back({194,2,5});
-        adjacency_list[117].push_back({194,2,5});
+        adjacency_list[117].push_back({118,2,5});
         adjacency_list[194].push_back({195,2,5});
         adjacency_list[195].push_back({194,2,5});
         adjacency_list[195].push_back({196,2,5});
@@ -870,6 +878,7 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
     cout<<"Invalid Source or Destination Station"<<endl;
     return 0;
   }
+  
 
   int source_index;
   int destination_index;
@@ -893,9 +902,11 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
 
   if(valid_source==false){
      cout<<"The Starting Station Entered is InValid"<<endl;
+     return 0;
   }
   if(valid_destination==false){
     cout<<"The Destination Station Entered is InValid"<<endl;
+    return 0;
   }
  
 
@@ -1045,3 +1056,4 @@ cout<<"Fare In Rupees : "<<compute_fare(num_stations);
 
   return 0;
 }
+
