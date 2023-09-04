@@ -714,10 +714,11 @@ void compute_interchanges(vector<pair<int,int>>&interchange_at_station ,  vector
      return;
 }
 
-void compute_time_taken(vector<int>&path, int index ,float&time , vector<vector<float>>adjacency_list[], unordered_map<int,float>&interchange_time , int num_stations , int prev_line_no){
+float compute_time_taken(vector<int>&path, int index , vector<vector<float>> adjacency_list[], unordered_map<int,float>& interchange_time , int num_stations , int prev_line_no){
     
-    if(index==num_stations-1) return;
+    if(index==num_stations-1) return 0;
 
+    float time=0;
     for(auto adjacent : adjacency_list[path[index]]){
         int adjnode = adjacent[0];
         float weight = adjacent[1];
@@ -726,18 +727,19 @@ void compute_time_taken(vector<int>&path, int index ,float&time , vector<vector<
         if(adjnode == path[index+1]){
 
         if(prev_line_no!=-1 && prev_line_no!=line_no){
-        time = time +  weight + interchange_time[path[index]];
-        compute_time_taken(path, index+1 ,time,adjacency_list, interchange_time , num_stations , line_no);
+        // time = time +  weight + interchange_time[path[index]];
+        time+=weight+interchange_time[path[index]]+compute_time_taken(path, index+1 ,adjacency_list, interchange_time , num_stations , line_no);
+        // time = time - (weight + interchange_time[path[index]]);
         }
         else{
-        time = time +  weight;
-        compute_time_taken(path, index+1 ,time ,adjacency_list, interchange_time , num_stations , line_no);
+        time+=weight+compute_time_taken(path, index+1 ,adjacency_list, interchange_time , num_stations , line_no);
+        // time = time - weight;
         }
 
         }
     }
    
-    return;
+    return time;
 }
 
 
@@ -1034,16 +1036,21 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
       int prev = -1;
 
       compute_interchanges(interchange_at_station , path ,adjacency_list, prev, index );
-      
-       for(int i=0;i<interchange_at_station.size()-1;i++){
-        if((interchange_at_station[i].first==117 && interchange_at_station[i+1].first==118 ) || (interchange_at_station[i].first==118 && interchange_at_station[i+1].first==117)){
-          interchange_at_station.erase(interchange_at_station.begin()+i);
-          interchange_at_station.erase(interchange_at_station.begin()+i);
-         break;
+     
+      bool flag = false;
+      if(!interchange_at_station.empty()){
+          for(int i=0;i<interchange_at_station.size()-1;i++){
+          if((interchange_at_station[i].first==117 && interchange_at_station[i+1].first==118 ) || (interchange_at_station[i].first==118 && interchange_at_station[i+1].first==117)){
+            interchange_at_station.erase(interchange_at_station.begin()+i);
+            interchange_at_station.erase(interchange_at_station.begin()+i);
+            flag = true;
+          break;
+          }
         }
+
       }
-    
-      if(interchange_at_station.size()>0){
+          
+    if(!interchange_at_station.empty()){
 
       cout<<"Interchanges are :"<<endl;
       int num_interchanges = interchange_at_station.size();
@@ -1053,16 +1060,21 @@ vector <string> Stations_List = {"Shaheed Sthal (New Bus Adda)", "Hindon River",
         cout<<" change for the "<<line_color[interchange_at_station[interchange].second]<<endl;
       }
       cout<<endl;
-      } 
-      
-      float time=0;
+     } 
+   
+    
       int prev_line_no = -1;
       int Index=0;
-      compute_time_taken(path, Index ,time ,adjacency_list, interchange_time , num_stations , prev_line_no);
+      
+      float time=compute_time_taken(path, Index ,adjacency_list, interchange_time , num_stations , prev_line_no);
       
       int total_stoppage_time = 0.25*(num_stations-2);
-
-      cout<<"Total Time Taken : "<< time + total_stoppage_time<<endl<<endl;
+      
+      float subtract = 0;
+      if(flag){
+        subtract = 3 + 2.5;
+      }
+      cout<<"Total Time Taken : "<< time + total_stoppage_time - subtract<<endl<<endl;
    
   }
 
@@ -1072,4 +1084,3 @@ cout<<"Fare In Rupees : "<<compute_fare(num_stations);
 
   return 0;
 }
-
